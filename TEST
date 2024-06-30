@@ -1,0 +1,93 @@
+import React, { useState } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+
+const LinearFunctionApplet = () => {
+  const [slope, setSlope] = useState(1);
+  const [yIntercept, setYIntercept] = useState(0);
+  const [functionType, setFunctionType] = useState('ascending');
+
+  const generateData = () => {
+    const data = [];
+    for (let x = -5; x <= 5; x++) {
+      let y;
+      switch (functionType) {
+        case 'ascending':
+          y = slope * x + yIntercept;
+          break;
+        case 'descending':
+          y = -slope * x + yIntercept;
+          break;
+        case 'constant':
+          y = yIntercept;
+          break;
+        default:
+          y = 0;
+      }
+      data.push({ x, y: parseFloat(y.toFixed(2)) });
+    }
+    return data;
+  };
+
+  const handleSlopeChange = (e) => {
+    setSlope(parseFloat(e.target.value));
+  };
+
+  const handleYInterceptChange = (e) => {
+    setYIntercept(parseFloat(e.target.value));
+  };
+
+  return (
+    <div className="p-4 max-w-xl mx-auto" dir="rtl">
+      <h2 className="text-2xl font-bold mb-4">أبلت الدالة الخطية</h2>
+      <div className="mb-4 space-y-4">
+        <div>
+          <Label htmlFor="slope">الميل:</Label>
+          <Input
+            id="slope"
+            type="number"
+            value={slope}
+            onChange={handleSlopeChange}
+            className="w-full"
+          />
+        </div>
+        <div>
+          <Label htmlFor="y-intercept">التقاطع مع المحور y:</Label>
+          <Input
+            id="y-intercept"
+            type="number"
+            value={yIntercept}
+            onChange={handleYInterceptChange}
+            className="w-full"
+          />
+        </div>
+        <div className="flex justify-between">
+          <Button onClick={() => setFunctionType('ascending')} variant={functionType === 'ascending' ? 'default' : 'outline'}>
+            تصاعدية
+          </Button>
+          <Button onClick={() => setFunctionType('descending')} variant={functionType === 'descending' ? 'default' : 'outline'}>
+            تنازلية
+          </Button>
+          <Button onClick={() => setFunctionType('constant')} variant={functionType === 'constant' ? 'default' : 'outline'}>
+            ثابتة
+          </Button>
+        </div>
+      </div>
+      <LineChart width={500} height={300} data={generateData()} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="x" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        <Line type="monotone" dataKey="y" stroke="#8884d8" />
+      </LineChart>
+      <div className="mt-4">
+        <p>معادلة الدالة الحالية: y = {functionType === 'constant' ? yIntercept : `${functionType === 'ascending' ? slope : -slope}x + ${yIntercept}`}</p>
+      </div>
+    </div>
+  );
+};
+
+export default LinearFunctionApplet;
